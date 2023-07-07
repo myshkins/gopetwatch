@@ -3,19 +3,15 @@ package main
 import (
 	"database/sql"
 	"os"
-
 	"net/http"
-
 	"html/template"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
 	"github.com/go-echarts/go-echarts/v2/types"
 	log "github.com/sirupsen/logrus"
-
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gorilla/mux"
-	
 )
 
 func fillTemplate(w http.ResponseWriter, s template.HTML) {
@@ -37,6 +33,7 @@ func generateLineData(db *sql.DB) (temps, timestamps []opts.LineData) {
 	temps = make([]opts.LineData, 0)
 	timestamps = make([]opts.LineData, 0)
 	readings := queryReadings(db)
+
 	for _, r := range readings {
 		temps = append(temps, opts.LineData{Value: r.Temperature})
 		timestamps = append(timestamps, opts.LineData{Value: r.Reading_timestamp})
@@ -65,22 +62,6 @@ func renderChart(db *sql.DB) template.HTML {
 	return htmlSnippet
 }
 
-func homeHandler(w http.ResponseWriter, _ *http.Request) {
-	db := dbConnect()
-	err := createTable(db)
-	if err != nil {
-		log.Warn(err)
-	}
-
-	err = seedDB(db)
-	if err != nil {
-		log.Warn(err)
-	}
-
-	snippet := renderChart(db)
-	// resultQueryReadings := queryReadings(db)
-	fillTemplate(w, snippet)
-}
 
 func init() {
 	log.SetOutput(os.Stdout)
@@ -96,14 +77,16 @@ func init() {
 }
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/", homeHandler)
-
+	r := gin.Default()
+  		
+	
 	log.Info("Starting server...")
-	p := "poop"
-	log.Info("it smells like: ", p)
 	err := http.ListenAndServe(":8081", r)
 	if err != nil {
 		log.Fatal("Server failed to start", err)
 	}
+}
+
+func loadDatabase() {
+	db, err := database.dbConnect()
 }
