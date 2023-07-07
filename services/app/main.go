@@ -1,67 +1,15 @@
 package main
 
 import (
-	"database/sql"
 	"os"
 	"net/http"
-	"html/template"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-echarts/go-echarts/v2/charts"
-	"github.com/go-echarts/go-echarts/v2/opts"
-	"github.com/go-echarts/go-echarts/v2/types"
 	log "github.com/sirupsen/logrus"
 	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/myshkins/gopetwatch/database"
 )
-
-func fillTemplate(w http.ResponseWriter, s template.HTML) {
-	type tmplData struct {
-		Title string
-		Snippet template.HTML
-	}
-
-	data := tmplData{
-		Title: "gopetwatch",
-		Snippet: s,
-	}
-
-	tmpl := template.Must(template.ParseFiles("index.html"))
-	tmpl.Execute(w, data)
-}
-
-func generateLineData(db *sql.DB) (temps, timestamps []opts.LineData) {
-	temps = make([]opts.LineData, 0)
-	timestamps = make([]opts.LineData, 0)
-	readings := queryReadings(db)
-
-	for _, r := range readings {
-		temps = append(temps, opts.LineData{Value: r.Temperature})
-		timestamps = append(timestamps, opts.LineData{Value: r.Reading_timestamp})
-	}
-	return temps, timestamps
-}
-
-func renderChart(db *sql.DB) template.HTML {
-	// create a new line instance
-	line := charts.NewLine()
-	// set some global options like Title/Legend/ToolTip or anything else
-	line.SetGlobalOptions(
-		charts.WithInitializationOpts(opts.Initialization{Theme: types.ThemeWesteros}),
-		charts.WithTitleOpts(opts.Title{
-			Title:    "gopetwatch",
-			Subtitle: "cool bruh",
-		}))
-
-	// Put data into instance
-	temps, timestamps := generateLineData(db)
-	line.SetXAxis(timestamps).
-		AddSeries("temps", temps).
-		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{Smooth: true}))
-	line.Renderer = newSnippetRenderer(line, line.Validate)
-	var htmlSnippet template.HTML = renderToHtml(line)
-	return htmlSnippet
-}
-
 
 func init() {
 	log.SetOutput(os.Stdout)
@@ -88,5 +36,5 @@ func main() {
 }
 
 func loadDatabase() {
-	db, err := database.dbConnect()
+	database.Connect()
 }

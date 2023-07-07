@@ -1,4 +1,4 @@
-package main
+package database
 
 type Reading struct{
 	Temperature float64
