@@ -1,8 +1,9 @@
 # from sense_hat import SenseHat
 import requests
 from datetime import datetime as dt
-import json
+# import json
 import logging
+import random
 
 
 logging.basicConfig(
@@ -12,11 +13,19 @@ logging.basicConfig(
 # hat = SenseHat()
 
 
-def send_temp_point(arg):
-    # temp = hat.get_temperature()
-    temp = 70.5
-    now = dt.now
-    data_dict = {"temperature": temp, "time": now}
-    j = json.dumps(data_dict)
-    response = requests.post("http://0.0.0.0:8081/post", json=j)
-    logging.info("time: %s, response: %s", now, response)
+def send_temp_point():
+    now = str(dt.now())
+    # temp = round(hat.get_temperature(), 2)
+    # if type(temp) != float:
+    #   logging.warn("hat.get_temperature returned non-float value: %s, temp")
+    temp = random.uniform(60.0, 70.0)
+    data_dict = {"temperature": round(temp, 2), "datetime": now}
+    response = requests.post(url="http://0.0.0.0:8081/post", json=data_dict)
+    response_code = response.status_code
+    if response_code != 200:
+        logging.warning(
+            "post at time: {}, got response {}".format(now, response_code)
+        )
+
+
+send_temp_point()

@@ -11,6 +11,9 @@ services:
       - 8081:8081
     volumes:
       - ./services/app:/usr/local/go/src/gopetwatch
+    depends_on: 
+      mysql:
+        condition: service_healthy
 
   # frontend:
   #   container_name: gopetwatch_frontend
@@ -29,6 +32,10 @@ services:
       - MYSQL_USER=chancho
       - MYSQL_PASSWORD=raisin
       - MYSQL_INITDB_SKIP_TZINFO=true
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   adminer:
     image: adminer

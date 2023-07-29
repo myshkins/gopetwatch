@@ -1,6 +1,6 @@
 package database
 
-type Reading struct{
-	Temperature float64
-  Reading_timestamp string
+type Reading struct {
+	Temperature      float32 `json:"temperature"`
+	ReadingTimestamp string  `json:"datetime"`
 }

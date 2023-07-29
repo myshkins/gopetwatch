@@ -1,0 +1,111 @@
+name: build-push-deploy
+run-name: ${{ github.actor }} is running deploy
+on:
+  push:
+    tags:
+      - v0*
+      - v1*
+
+# env:
+  # REGISTRY: ghcr.io
+
+jobs:
+  build-push-app:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: make env file
+        run: |
+          echo "${{ secrets.ENV }}" >> .env
+
+      - name: login to github packages
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/app
+          tags: |
+            type=semver,pattern={{version}},value=${{ inputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Build and push gopetwatch app image
+        uses: docker/build-push-action@v4
+        with:
+          context: services/app
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-push-mysql:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: make env file
+        run: |
+          echo "${{ secrets.ENV }}" >> .env
+
+      - name: login to github packages
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/mysql
+          tags: |
+            type=semver,pattern={{version}},value=${{ inputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Build and push gopetwatch mysql image
+        uses: docker/build-push-action@v4
+        with:
+          context: services/mysql
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+  #
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [build-push-app, build-push-mysql]
+  #   steps:
+  #     - name: checkout repo
+  #       uses: actions/checkout@v3
+  #
+  #     - name: deploy to linode
+  #       uses: easingthemes/ssh-deploy@main
+  #       env:
+  #         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         ARGS: "-azc -i --delete"
+  #         SOURCE: "docker-compose.prod.yaml"
+  #         REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+  #         REMOTE_USER: ${{ secrets.REMOTE_USER }}
+  #         TARGET: ${{ secrets.REMOTE_TARGET }}
+  #         SCRIPT_AFTER: |
+  #           cd ${{ secrets.REMOTE_TARGET }}
+  #           docker compose -f docker-compose.prod.yaml down
+  #           docker image prune -a -f
+  #           docker compose -f docker-compose.prod.yaml up -d --build

@@ -1,40 +1,47 @@
 package main
 
 import (
+	// "net/http"
 	"os"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/sirupsen/logrus"
 
 	"github.com/myshkins/gopetwatch/database"
+	"github.com/myshkins/gopetwatch/logger"
+	// "github.com/myshkins/gopetwatch/renderer"
+	"github.com/myshkins/gopetwatch/handlers"
 )
 
 func init() {
-	log.SetOutput(os.Stdout)
+	logger.InitLogger()
+	logger.Log.SetOutput(os.Stdout)
 
 	file, err := os.OpenFile("gopetwatch.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err == nil {
-		log.SetOutput(file)
+		logger.Log.SetOutput(file)
 	} else {
-		log.Info("Failed to log to file, using default stderr")
+		logger.Log.Info("Failed to logger.Log.to file, using default stderr")
 	}
-
-	log.SetLevel(log.InfoLevel)
+  
+	logger.Log.SetLevel(logrus.InfoLevel)
+	loadDatabase()
 }
 
 func main() {
 	r := gin.Default()
-  		
-	
-	log.Info("Starting server...")
-	err := http.ListenAndServe(":8081", r)
-	if err != nil {
-		log.Fatal("Server failed to start", err)
-	}
+  r.LoadHTMLFiles("templates/index.html")  		
+
+	r.GET("/", handlers.HomeHandler)
+	r.POST("/post", handlers.PostTempHandler)
+	r.Run(":8081")
+
+	logger.Log.Info("Starting server...")
 }
 
 func loadDatabase() {
 	database.Connect()
+	database.CreateTable()
+	database.SeedDatabase()
 }

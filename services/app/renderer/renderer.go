@@ -5,7 +5,6 @@ import (
 	"fmt"
   "html/template"
   "io"
-  "net/http"
 
 	chartrender "github.com/go-echarts/go-echarts/v2/render"
   log "github.com/sirupsen/logrus"
@@ -57,16 +56,20 @@ func renderToHtml(c interface{}) template.HTML {
 	return template.HTML(buf.String())
 }
 
-func RenderChart() template.HTML {
+//renders the chart as a string of html
+func RenderChart() (template.HTML) {
 	// create a new line instance
 	line := charts.NewLine()
 	// set some global options like Title/Legend/ToolTip or anything else
 	line.SetGlobalOptions(
-		charts.WithInitializationOpts(opts.Initialization{Theme: types.ThemeWesteros}),
+		charts.WithInitializationOpts(opts.Initialization{
+			Theme: types.ThemeWesteros}),
 		charts.WithTitleOpts(opts.Title{
 			Title:    "gopetwatch",
 			Subtitle: "cool bruh",
-		}))
+		}),
+	  charts.WithYAxisOpts(opts.YAxis{
+			Max: 100, Min: 20}))
 
 	// Put data into instance
 	temps, timestamps := generateLineData()
@@ -77,21 +80,23 @@ func RenderChart() template.HTML {
 	var htmlSnippet template.HTML = renderToHtml(line)
 	return htmlSnippet
 }
-
-func FillTemplate(w http.ResponseWriter, s template.HTML) {
-	type tmplData struct {
-		Title string
-		Snippet template.HTML
-	}
-
-	data := tmplData{
-		Title: "gopetwatch",
-		Snippet: s,
-	}
-
-	tmpl := template.Must(template.ParseFiles("index.html"))
-	tmpl.Execute(w, data)
-}
+//
+// func FillTemplate(w http.ResponseWriter) {
+// 	type tmplData struct {
+// 		Title string
+// 		Snippet template.HTML
+// 	}
+//
+// 	s := RenderChart()
+// 	data := tmplData{
+// 		Title: "gopetwatch",
+// 		Snippet: s,
+// 	}
+//
+// 	tmpl := template.Must(template.ParseFiles("index.html"))
+// 	tmpl.Execute(w, data)
+// 	
+// }
 
 func generateLineData() (temps, timestamps []opts.LineData) {
 	temps = make([]opts.LineData, 0)
@@ -100,7 +105,7 @@ func generateLineData() (temps, timestamps []opts.LineData) {
 
 	for _, r := range readings {
 		temps = append(temps, opts.LineData{Value: r.Temperature})
-		timestamps = append(timestamps, opts.LineData{Value: r.Reading_timestamp})
+		timestamps = append(timestamps, opts.LineData{Value: r.ReadingTimestamp})
 	}
 	return temps, timestamps
 }
