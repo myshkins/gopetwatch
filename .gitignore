@@ -1,21 +1,13 @@
 #logs
 logs/
+*.log
+
 node_modules
-# services/frontend/build
-services/etl/logs/scheduler/latest
 
 .vscode
 
 # docker override file
 docker-compose.override.yaml
-
-# .csv data files
-aqi_data.csv
-merged_airnow_data.csv
-merged_readings_airnow.csv
-new_airnow_data.csv
-raw_readings_airnow.csv
-stations_airnow.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
