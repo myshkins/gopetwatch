@@ -3,10 +3,8 @@ version: '3'
 services:
   api:
     container_name: gopetwatch_app
-    build:
-      context: ./services/app
-      dockerfile: Dockerfile.dev
-    command: reflex -r '\.go$' -s -- sh -c 'go install && go run gopetwatch'
+    user: 1000:1000
+    image: ghcr.io/myshkins/gopetwatch/app:latest
     ports:
       - 8081:8081
     volumes:
@@ -16,16 +14,17 @@ services:
         condition: service_healthy
 
   mysql:
-    image: mysql
     container_name: gopetwatch_mysql
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=gopetwatch
-      - MYSQL_USER=chancho
-      - MYSQL_PASSWORD=raisin
+    image: ghcr.io/myshkins/gopetwatch/mysql:latest
+    environment: 
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_INITDB_SKIP_TZINFO=true
+    ports:
+      - "${MYSQL_PORT}:3306"
+    restart: always
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
@@ -35,4 +34,5 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 8082:8080
+
