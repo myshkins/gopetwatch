@@ -11,4 +11,4 @@ COPY . .
 
 RUN go build -o /usr/local/bin/gopetwatch
 
-CMD go run .
+CMD go install && go run .

@@ -45,3 +45,4 @@ func loadDatabase() {
 	database.CreateTable()
 	database.SeedDatabase()
 }
+//
