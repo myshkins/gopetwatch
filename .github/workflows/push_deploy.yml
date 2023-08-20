@@ -106,7 +106,8 @@ jobs:
           TARGET: ${{ secrets.REMOTE_TARGET }}
           SCRIPT_AFTER: |
             cd ${{ secrets.REMOTE_TARGET }}
-            docker login ghcr.io -u myshkins -p {{ secrets.GH_TOKEN }}
+            export CR_PAT={{ secrets.GH_TOKEN }}
+            echo $CR_PAT | docker login ghcr.io -u myshkins --password-stdin
             docker compose -f docker-compose.prod.yaml down
             docker image prune -a -f
             docker compose -f docker-compose.prod.yaml up -d --build
