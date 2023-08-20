@@ -106,6 +106,7 @@ jobs:
           TARGET: ${{ secrets.REMOTE_TARGET }}
           SCRIPT_AFTER: |
             cd ${{ secrets.REMOTE_TARGET }}
+            echo "${{ secrets.ENV }}" >> .env
             export CR_PAT=${{ secrets.GH_TOKEN }}
             echo $CR_PAT | docker login ghcr.io -u myshkins --password-stdin
             docker compose -f docker-compose.prod.yaml down
