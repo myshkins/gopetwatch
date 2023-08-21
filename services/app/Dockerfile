@@ -1,14 +1,15 @@
-FROM golang:1.20.4-bullseye
+FROM golang:1.20.4-bullseye as builder
 
-WORKDIR /usr/local/go/src/gopetwatch
+WORKDIR /go/src/gopetwatch
 
 # pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
-COPY go.mod go.sum ./
+COPY . .
 
 RUN go mod download && go mod verify && go mod tidy
 
-COPY . .
+RUN go build -o /go/bin/gopetwatch .
 
-RUN go build -o /usr/local/bin/gopetwatch
+COPY --from=builder /go/bin/gopetwatch /usr/local/bin/gopetwatch
 
-CMD go install && go run .
+CMD ["gopetwatch"]
+
