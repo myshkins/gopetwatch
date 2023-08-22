@@ -1,7 +1,6 @@
 package main
 
 import (
-	// "net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/myshkins/gopetwatch/database"
 	"github.com/myshkins/gopetwatch/logger"
-	// "github.com/myshkins/gopetwatch/renderer"
 	"github.com/myshkins/gopetwatch/handlers"
 )
 
