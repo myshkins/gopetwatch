@@ -23,7 +23,7 @@ func init() {
 		logger.Log.Info("Failed to logger.Log.to file, using default stderr")
 	}
   
-	logger.Log.SetLevel(logrus.InfoLevel)
+	logger.Log.SetLevel(logrus.DebugLevel)
 	loadDatabase()
 }
 
