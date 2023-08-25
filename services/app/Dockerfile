@@ -10,7 +10,13 @@ RUN go build -o /go/bin/gopetwatch .
 
 FROM ubuntu:jammy
 
-COPY --from=builder /go/bin/gopetwatch /usr/local/bin/gopetwatch
+RUN useradd -rm -d /home/api -s /bin/bash -u 1000 iceking
 
-CMD ["gopetwatch"]
+WORKDIR /home/app
+
+COPY templates templates
+
+COPY --from=builder /go/bin/gopetwatch .
+
+CMD ["./gopetwatch"]
 
