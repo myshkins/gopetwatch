@@ -10,6 +10,8 @@ RUN go build -o /go/bin/gopetwatch .
 
 FROM ubuntu:jammy
 
+COPY templates .
+
 COPY --from=builder /go/bin/gopetwatch /usr/local/bin/gopetwatch
 
 CMD ["gopetwatch"]

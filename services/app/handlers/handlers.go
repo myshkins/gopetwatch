@@ -17,8 +17,6 @@ func HomeHandler(c *gin.Context) {
 		"title": "chanch watch",
 		"snippet": s,
 		})
-	// snippet := renderer.RenderChart()
-	// resultQueryReadings := queryReadings(db)
 }
 
 func PostTempHandler(c *gin.Context) {
@@ -36,4 +34,4 @@ func PostTempHandler(c *gin.Context) {
     logger.Log.Warn(err)
 	}
 }
-// hello
+
