@@ -19,6 +19,11 @@ func HomeHandler(c *gin.Context) {
 		})
 }
 
+func TestHandler(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "you're in",
+		})
+}
 func PostTempHandler(c *gin.Context) {
 	var tempPoint database.Reading
 	if err := c.ShouldBindJSON(&tempPoint); err != nil {

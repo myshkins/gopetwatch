@@ -11,6 +11,12 @@ RUN go install github.com/cespare/reflex@latest
 
 COPY . .
 
+ARG GIN_USER_ID
+ARG GIN_PW
+
+ENV GIN_USER_ID=$GIN_USER_ID
+ENV GIN_PW=$GIN_PW
+
 RUN go build -o /usr/local/bin/gopetwatch
 
 CMD ["gopetwatch"]

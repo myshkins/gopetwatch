@@ -14,6 +14,12 @@ RUN useradd -rm -d /home/api -s /bin/bash -u 1000 iceking
 
 WORKDIR /home/app
 
+ARG GIN_USER_ID
+ARG GIN_PW
+
+ENV GIN_USER_ID=$GIN_USER_ID
+ENV GIN_PW=$GIN_PW
+
 COPY templates templates
 
 COPY --from=builder /go/bin/gopetwatch .

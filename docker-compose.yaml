@@ -6,6 +6,7 @@ services:
     build:
       context: ./services/app
       dockerfile: Dockerfile.dev
+    env_file: ./.env
     command: reflex -r '\.go$' -s -- sh -c 'go install && go run gopetwatch'
     ports:
       - 8081:8081
@@ -20,12 +21,7 @@ services:
     container_name: gopetwatch_mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=gopetwatch
-      - MYSQL_USER=chancho
-      - MYSQL_PASSWORD=raisin
-      - MYSQL_INITDB_SKIP_TZINFO=true
+    env_file: ./.env
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s

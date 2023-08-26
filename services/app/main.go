@@ -31,8 +31,14 @@ func main() {
 	r := gin.Default()
   r.LoadHTMLFiles("templates/index.html")  		
 
+	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
+		os.Getenv("GIN_USER_ID"): os.Getenv("GIN_PW"),
+		}))
+
 	r.GET("/", handlers.HomeHandler)
-	r.POST("/post", handlers.PostTempHandler)
+	authorized.GET("/test", handlers.TestHandler)
+	authorized.POST("/post", handlers.PostTempHandler)
+	
 	r.Run(":8081")
 
 	logger.Log.Info("Starting server...")
