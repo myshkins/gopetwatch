@@ -43,4 +43,4 @@ def send_temp_point():
 starttime = time.time()
 while True:
     send_temp_point()
-    time.sleep(600.0 - ((time.time() - starttime) % 600.0))
+    time.sleep(5.0 - ((time.time() - starttime) % 1.0))
