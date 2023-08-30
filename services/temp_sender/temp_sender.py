@@ -26,7 +26,8 @@ def send_temp_point():
         url = "http://0.0.0.0:8081/post"
     else:
         hat = SenseHat()
-        temp = round(hat.get_temperature(), 2)
+        t = (9/5) * hat.get_temperature() + 32
+        temp = round(t, 2)
         if type(temp) != float:
             logging.warn("hat.get_temperature returned non-float value: %s, temp")
         url = "https://gopetwatch.ak0.io/post"
