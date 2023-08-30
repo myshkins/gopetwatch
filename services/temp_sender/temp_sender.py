@@ -2,6 +2,7 @@
 import logging
 import os
 import random
+import time
 import requests
 from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
@@ -38,5 +39,7 @@ def send_temp_point():
             "post at time: {}, got response {}".format(now, response_code)
         )
 
-
-send_temp_point()
+starttime = time.time()
+while True:
+    send_temp_point()
+    time.sleep(600.0 - ((time.time() - starttime) % 600.0))
