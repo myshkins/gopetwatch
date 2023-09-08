@@ -10,10 +10,9 @@ import (
 	"github.com/go-echarts/go-echarts/v2/opts"
 	chartrender "github.com/go-echarts/go-echarts/v2/render"
 	"github.com/go-echarts/go-echarts/v2/types"
-	log "github.com/sirupsen/logrus"
+	"github.com/myshkins/gopetwatch/logger"
 
 	database "github.com/myshkins/gopetwatch/database"
-	"github.com/myshkins/gopetwatch/logger"
 )
 
 type snippetRenderer struct {
@@ -50,7 +49,7 @@ func renderToHtml(c interface{}) template.HTML {
 	r := c.(chartrender.Renderer)
 	err := r.Render(&buf)
 	if err != nil {
-		log.Printf("Failed to render chart: %s", err)
+		logger.Log.Infof("Failed to render chart: %s", err)
 		return ""
 	}
 
@@ -61,7 +60,6 @@ func renderToHtml(c interface{}) template.HTML {
 func RenderChart() (template.HTML) {
 	// create a new line instance
 	line := charts.NewLine()
-	logger.Log.Info("charts.NewLine")
 	// set some global options like Title/Legend/ToolTip or anything else
 	line.SetGlobalOptions(
 		charts.WithInitializationOpts(opts.Initialization{
@@ -72,7 +70,6 @@ func RenderChart() (template.HTML) {
 		}),
 	  charts.WithYAxisOpts(opts.YAxis{
 			Max: 100, Min: 20}))
-	logger.Log.Info("line.SetGlobalOptions")
 
 	// Put data into instance
 	temps, timestamps := generateLineData()
@@ -80,11 +77,8 @@ func RenderChart() (template.HTML) {
 	line.SetXAxis(timestamps).
 		AddSeries("temps", temps).
 		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{Smooth: true}))
-	logger.Log.Info("line.setXAxis")
 	line.Renderer = newSnippetRenderer(line, line.Validate)
-	logger.Log.Info("line.Renderer")
 	var htmlSnippet template.HTML = renderToHtml(line)
-	logger.Log.Info("renderToHtml")
 	return htmlSnippet
 }
 

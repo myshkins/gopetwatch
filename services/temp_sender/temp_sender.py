@@ -6,7 +6,7 @@ import time
 import requests
 from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
-from datetime import datetime as dt
+from datetime import timezone, datetime as dt
 
 
 environment = "dev"
@@ -20,7 +20,7 @@ logging.basicConfig(
 )
 
 def send_temp_point():
-    now = str(dt.now())
+    now = str(dt.now(tz=timezone.utc))
     if environment == "dev":
         temp = random.uniform(60.0, 70.0)
         url = "http://0.0.0.0:8081/post"

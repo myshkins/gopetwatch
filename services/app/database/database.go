@@ -71,11 +71,11 @@ func SeedDatabase() {
 }
 
 func QueryReadings() []Reading {
-	stmt := `
+	query := `
 		select temperature, reading_timestamp
 		from readings
-		where reading_timestamp >= now() - interval 1 day;`
-	rows, err := Database.Query(stmt)
+	  where reading_timestamp < now() - interval 1 minute`
+	rows, err := Database.Query(query)
 	if err != nil {
 		logger.Log.Warn(err)
 	}
@@ -93,6 +93,7 @@ func QueryReadings() []Reading {
 	if err := rows.Err(); err != nil {
 		logger.Log.Warn(err)
 	}
+	logger.Log.Infof("readings: %v", readings)
 
 	return readings
 }
