@@ -40,7 +40,5 @@ def send_temp_point():
             "post at time: {}, got response {}".format(now, response_code)
         )
 
-starttime = time.time()
-while True:
+if __name__ == "__main__":
     send_temp_point()
-    time.sleep(5.0 - ((time.time() - starttime) % 1.0))
