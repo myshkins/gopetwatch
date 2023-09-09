@@ -65,8 +65,8 @@ func RenderChart() (template.HTML) {
 		charts.WithInitializationOpts(opts.Initialization{
 			Theme: types.ThemeWesteros}),
 		charts.WithTitleOpts(opts.Title{
-			Title:    "gopetwatch",
-			Subtitle: "cool bruh",
+			Title:    "24hr Temperatures",
+			Subtitle: "stay cool Chanchy!",
 		}),
 	  charts.WithYAxisOpts(opts.YAxis{
 			Max: 100, Min: 20}))
@@ -85,7 +85,7 @@ func RenderChart() (template.HTML) {
 func generateLineData() (temps, timestamps []opts.LineData) {
 	temps = make([]opts.LineData, 0)
 	timestamps = make([]opts.LineData, 0)
-	readings := database.QueryReadings()
+	readings := database.Query24hr()
 
 	for _, r := range readings {
 		temps = append(temps, opts.LineData{Value: r.Temperature})
